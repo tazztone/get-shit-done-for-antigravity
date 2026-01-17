@@ -4,47 +4,87 @@ description: Show current position in roadmap and next steps
 
 # /progress Workflow
 
-**Purpose**: Quick status check — where are we and what's next?
+<objective>
+Quick status check — where are we and what's next?
+</objective>
 
-## Steps
+<process>
 
-### 1. Read Current State
-Load:
+## 1. Load Current State
+
+Read:
 - `.gsd/STATE.md` — Current position
 - `.gsd/ROADMAP.md` — Phase statuses
 
-### 2. Generate Report
-Display in this format:
+---
+
+## 2. Calculate Progress
+
+Count phases:
+- Total phases
+- Completed phases (✅)
+- In progress (🔄)
+- Blocked (⏸️)
+- Not started (⬜)
+
+---
+
+## 3. Display Status
 
 ```
-📍 CURRENT POSITION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GSD ► PROGRESS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Project: [from SPEC.md title]
-Milestone: [from ROADMAP.md]
+Project: {project name from SPEC.md}
+Milestone: {milestone from ROADMAP.md}
 
-PHASE STATUS
-┌─────────────────────────────────┐
-│ ✅ Phase 1: [Name]              │
-│ ✅ Phase 2: [Name]              │
-│ 🔄 Phase 3: [Name] ← YOU ARE HERE
-│ ⬜ Phase 4: [Name]              │
-│ ⬜ Phase 5: [Name]              │
-└─────────────────────────────────┘
+───────────────────────────────────────────────────────
+
+PHASES
+
+✅ Phase 1: {Name}
+✅ Phase 2: {Name}
+🔄 Phase 3: {Name} ← CURRENT
+⬜ Phase 4: {Name}
+⬜ Phase 5: {Name}
+
+Progress: {completed}/{total} ({percentage}%)
+
+───────────────────────────────────────────────────────
 
 CURRENT TASK
-[What's being worked on from STATE.md]
+
+{Current task from STATE.md, or "None"}
+
+───────────────────────────────────────────────────────
 
 BLOCKERS
-[Any blockers from STATE.md, or "None"]
 
-NEXT UP
-→ [Next task or phase to tackle]
+{Blockers from STATE.md, or "None"}
+
+───────────────────────────────────────────────────────
+
+▶ NEXT UP
+
+{Recommended next action based on state}
+
+───────────────────────────────────────────────────────
 ```
 
-### 3. Suggest Action
+---
+
+## 4. Suggest Action
+
 Based on status, recommend:
-- If in-progress phase: `/execute N` to continue
-- If phase complete but not verified: `/verify N`
-- If verification failed: Show fix tasks
-- If all phases done: `/complete-milestone` or celebrate!
+
+| State | Recommendation |
+|-------|----------------|
+| Phase in progress | `/execute {N}` to continue |
+| Phase done, not verified | `/verify {N}` |
+| Verification failed | `/execute {N} --gaps-only` |
+| All phases complete | Celebrate! 🎉 |
+| No phases started | `/plan 1` to begin |
+| SPEC not finalized | Complete SPEC.md first |
+
+</process>

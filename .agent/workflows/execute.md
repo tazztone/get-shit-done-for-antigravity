@@ -1,70 +1,265 @@
 ---
 description: The Engineer — Execute a specific phase with focused context
+argument-hint: "<phase-number> [--gaps-only]"
 ---
 
 # /execute Workflow
 
-**Role**: The Engineer
-**Purpose**: Implement a single phase from the roadmap with laser focus.
+<role>
+You are a GSD executor orchestrator. You manage wave-based parallel execution of phase plans.
 
-## Usage
+**Core responsibilities:**
+- Validate phase exists and has plans
+- Discover and group plans by execution wave
+- Spawn focused execution for each plan
+- Verify phase goal after all plans complete
+- Update roadmap and state on completion
+</role>
+
+<objective>
+Execute all plans in a phase using wave-based parallel execution.
+
+Orchestrator stays lean: discover plans, analyze dependencies, group into waves, execute sequentially within waves, verify against phase goal.
+
+**Context budget:** ~15% orchestrator, fresh context per plan execution.
+</objective>
+
+<context>
+**Phase:** $ARGUMENTS (required - phase number to execute)
+
+**Flags:**
+- `--gaps-only` — Execute only gap closure plans (created by `/verify` when issues found)
+
+**Required files:**
+- `.gsd/ROADMAP.md` — Phase definitions
+- `.gsd/STATE.md` — Current position
+- `.gsd/phases/{phase}/` — Phase directory with PLAN.md files
+</context>
+
+<process>
+
+## 1. Validate Environment
+
+```powershell
+Test-Path ".gsd/ROADMAP.md"
+Test-Path ".gsd/STATE.md"
 ```
-/execute [phase_number]
+
+**If not found:** Error — user should run `/plan` first.
+
+---
+
+## 2. Validate Phase Exists
+
+```powershell
+# Check phase exists in roadmap
+Select-String -Path ".gsd/ROADMAP.md" -Pattern "Phase $PHASE:"
 ```
 
-Example: `/execute 1` executes Phase 1
+**If not found:** Error with available phases from ROADMAP.md.
 
-## Prerequisites
+---
 
-⚠️ **Planning Lock Enforcement**:
-1. Verify `.gsd/SPEC.md` contains `Status: FINALIZED`
-2. Verify `.gsd/ROADMAP.md` has the requested phase defined
+## 3. Ensure Phase Directory Exists
 
-**If either check fails**: STOP and inform user to run `/plan` first.
+```powershell
+$PHASE_DIR = ".gsd/phases/$PHASE"
+if (-not (Test-Path $PHASE_DIR)) {
+    New-Item -ItemType Directory -Path $PHASE_DIR
+}
+```
 
-## Steps
+---
 
-### 1. Load Minimal Context (Need-to-Know)
-Read ONLY:
-- The specific phase from `.gsd/ROADMAP.md`
-- Relevant sections of `.gsd/ARCHITECTURE.md` (only affected components)
-- `.gsd/STATE.md` for any blockers or context
+## 4. Discover Plans
 
-**DO NOT** load:
-- Other phases
-- Unrelated components
-- Full project history
+```powershell
+Get-ChildItem "$PHASE_DIR/*-PLAN.md"
+```
 
-### 2. Mark Phase In Progress
-Update `.gsd/ROADMAP.md`:
+**Check for existing summaries** (completed plans):
+```powershell
+Get-ChildItem "$PHASE_DIR/*-SUMMARY.md"
+```
+
+**Build list of incomplete plans** (PLAN without matching SUMMARY).
+
+**If `--gaps-only`:** Filter to only plans with `gap_closure: true` in frontmatter.
+
+**If no incomplete plans found:** Phase already complete, skip to step 8.
+
+---
+
+## 5. Group Plans by Wave
+
+Read `wave` field from each plan's frontmatter:
+
+```yaml
+---
+phase: 1
+plan: 2
+wave: 1
+---
+```
+
+**Group plans by wave number.** Lower waves execute first.
+
+Display wave structure:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GSD ► EXECUTING PHASE {N}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Wave 1: {plan-1}, {plan-2}
+Wave 2: {plan-3}
+
+{X} plans across {Y} waves
+```
+
+---
+
+## 6. Execute Waves
+
+For each wave in order:
+
+### 6a. Execute Plans in Wave
+For each plan in the current wave:
+
+1. **Load plan context** — Read only the PLAN.md file
+2. **Execute tasks** — Follow `<task>` blocks in order
+3. **Verify each task** — Run `<verify>` commands
+4. **Commit per task:**
+   ```powershell
+   git add -A
+   git commit -m "feat(phase-{N}): {task-name}"
+   ```
+5. **Create SUMMARY.md** — Document what was done
+
+### 6b. Verify Wave Complete
+Check all plans in wave have SUMMARY.md files.
+
+### 6c. Proceed to Next Wave
+Only after current wave fully completes.
+
+---
+
+## 7. Verify Phase Goal
+
+After all waves complete:
+
+1. **Read phase goal** from ROADMAP.md
+2. **Check must-haves** against actual codebase (not SUMMARY claims)
+3. **Run verification commands** specified in phase
+
+**Create VERIFICATION.md:**
 ```markdown
-**Status**: 🔄 In Progress
+## Phase {N} Verification
+
+### Must-Haves
+- [x] Must-have 1 — VERIFIED (evidence: ...)
+- [ ] Must-have 2 — FAILED (reason: ...)
+
+### Verdict: PASS / FAIL
 ```
 
-### 3. Execute Tasks
-For each task in the phase:
+**Route by verdict:**
+- `PASS` → Continue to step 8
+- `FAIL` → Create gap closure plans, offer `/execute {N} --gaps-only`
 
-1. **Implement** the task
-2. **Test** it works (run commands, check output)
-3. **Commit** with atomic message:
-   ```
-   feat(phase-N): [task description]
-   ```
-4. **Update** `.gsd/STATE.md` with progress
+---
 
-### 4. Verify Phase Completion
-Run the verification steps defined in the phase:
-- Execute test commands
-- Check expected outputs
-- Take screenshots if UI changes
+## 8. Update Roadmap and State
 
-### 5. Mark Complete
-If all verification passes:
-- Update phase status to `✅ Complete`
-- Update `.gsd/STATE.md` with completion summary
-- Add entry to `.gsd/JOURNAL.md`
+**Update ROADMAP.md:**
+```markdown
+### Phase {N}: {Name}
+**Status**: ✅ Complete
+```
 
-### 6. Context Hygiene Check
-If you encountered issues:
-- More than 3 debugging attempts? → Recommend `/pause`
-- Unexpected complexity? → Document in `.gsd/DECISIONS.md`
+**Update STATE.md:**
+```markdown
+## Current Position
+- **Phase**: {N} (completed)
+- **Task**: All tasks complete
+- **Status**: Verified
+
+## Last Session Summary
+Phase {N} executed successfully. {X} plans, {Y} tasks completed.
+
+## Next Steps
+1. Proceed to Phase {N+1}
+```
+
+---
+
+## 9. Commit Phase Completion
+
+```powershell
+git add .gsd/ROADMAP.md .gsd/STATE.md
+git commit -m "docs(phase-{N}): complete {phase-name}"
+```
+
+---
+
+## 10. Offer Next Steps
+
+</process>
+
+<offer_next>
+Output based on status:
+
+**Route A: Phase complete, more phases remain**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GSD ► PHASE {N} COMPLETE ✓
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{X} plans executed
+Goal verified ✓
+
+───────────────────────────────────────────────────────
+
+▶ Next Up
+Phase {N+1}: {Name}
+
+/plan {N+1}  — create execution plans
+/execute {N+1} — execute directly (if plans exist)
+
+───────────────────────────────────────────────────────
+```
+
+**Route B: All phases complete**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GSD ► MILESTONE COMPLETE 🎉
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+All phases completed and verified.
+
+───────────────────────────────────────────────────────
+```
+
+**Route C: Gaps found**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GSD ► PHASE {N} GAPS FOUND ⚠
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{X}/{Y} must-haves verified
+Gap closure plans created.
+
+/execute {N} --gaps-only — execute fix plans
+
+───────────────────────────────────────────────────────
+```
+</offer_next>
+
+<context_hygiene>
+**After 3 failed debugging attempts:**
+1. Stop current approach
+2. Document to `.gsd/STATE.md` what was tried
+3. Recommend `/pause` for fresh session
+</context_hygiene>

@@ -4,70 +4,128 @@ description: Restore context from previous session
 
 # /resume Workflow
 
-**Purpose**: Start a new session with full context from where we left off.
+<objective>
+Start a new session with full context from where we left off.
+</objective>
 
-## Steps
+<process>
 
-### 1. Load Saved State
-Read `.gsd/STATE.md` and display:
+## 1. Load Saved State
+
+Read `.gsd/STATE.md` completely.
+
+---
+
+## 2. Display Context
 
 ```
-🔄 RESUMING SESSION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GSD ► RESUMING SESSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 LAST POSITION
-Phase: [phase number and name]
-Task: [task in progress]
-Status: [status when paused]
+─────────────
+Phase: {phase from STATE.md}
+Task: {task from STATE.md}
+Status: {status when paused}
+
+───────────────────────────────────────────────────────
 
 CONTEXT FROM LAST SESSION
-[Context dump content]
+─────────────────────────
+{Context dump content from STATE.md}
+
+───────────────────────────────────────────────────────
 
 BLOCKERS
-[Any documented blockers]
+────────
+{Blockers from STATE.md, or "None"}
+
+───────────────────────────────────────────────────────
 
 NEXT STEPS (from last session)
-1. [First priority]
-2. [Second priority]
-3. [Third priority]
+──────────────────────────────
+1. {First priority}
+2. {Second priority}
+3. {Third priority}
+
+───────────────────────────────────────────────────────
 ```
 
-### 2. Load Recent Journal
+---
+
+## 3. Load Recent Journal
+
 Show last entry from `.gsd/JOURNAL.md`:
 - What was accomplished
 - Handoff notes
 - Any issues encountered
 
-### 3. Verify No Conflicts
-Check:
-- Any uncommitted changes in git?
-- Any file modifications since pause?
+---
 
-If conflicts found, warn user before proceeding.
+## 4. Check for Conflicts
 
-### 4. Update State
+```powershell
+# Check for uncommitted changes
+git status --porcelain
+```
+
+**If changes found:**
+```
+⚠️ UNCOMMITTED CHANGES DETECTED
+
+{list of modified files}
+
+These may be from the previous session.
+Review before proceeding.
+```
+
+---
+
+## 5. Update State
+
 Mark session as active in `.gsd/STATE.md`:
 ```markdown
-**Status**: Active (resumed [date/time])
+**Status**: Active (resumed {timestamp})
 ```
 
-### 5. Suggest Action
-Based on state, recommend:
-```
-READY TO CONTINUE
+---
 
-Suggested next action:
-→ /execute [N] — Continue phase N
-   or
-→ /verify [N] — Verify completed phase
-   or
-→ /progress — See full roadmap status
-```
+## 6. Suggest Action
 
-### 6. Fresh Context Advantage
-Remind:
 ```
+───────────────────────────────────────────────────────
+
+▶ READY TO CONTINUE
+
+Suggested action based on state:
+
+{One of:}
+• /execute {N} — Continue phase execution
+• /verify {N} — Verify completed phase
+• /plan {N} — Create plans for phase
+• /progress — See full roadmap status
+
+───────────────────────────────────────────────────────
+
 💡 Fresh session = fresh perspective
-   The previous context struggles are behind you.
-   You have all the information needed to proceed cleanly.
+
+You have all the context you need.
+The previous struggles are documented.
+Time to solve this with fresh eyes.
+
+───────────────────────────────────────────────────────
 ```
+
+</process>
+
+<fresh_context_advantage>
+A resumed session has advantages:
+
+1. **No accumulated confusion** — You see the problem clearly
+2. **Documented failures** — You know what NOT to try
+3. **Hypothesis preserved** — Pick up where logic left off
+4. **Full context budget** — 200k tokens of fresh capacity
+
+Often the first thing a fresh context sees is the obvious solution that a tired context missed.
+</fresh_context_advantage>

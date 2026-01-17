@@ -4,75 +4,138 @@ description: Context hygiene — dump state for clean session handoff
 
 # /pause Workflow
 
-**Purpose**: Safely pause work with complete state preservation.
+<objective>
+Safely pause work with complete state preservation for session handoff.
+</objective>
 
-## When to Use
+<when_to_use>
 - Ending a work session
 - Context getting heavy (many failed attempts)
 - Switching to a different task
 - Before taking a break
+- After 3+ debugging failures (Context Hygiene rule)
+</when_to_use>
 
-## Steps
+<process>
 
-### 1. Capture Current State
-Update `.gsd/STATE.md` with:
+## 1. Capture Current State
+
+Update `.gsd/STATE.md`:
 
 ```markdown
 ## Current Position
-- **Phase**: [current phase number and name]
-- **Task**: [specific task in progress, if any]
-- **Status**: Paused
+- **Phase**: {current phase number and name}
+- **Task**: {specific task in progress, if any}
+- **Status**: Paused at {timestamp}
 
 ## Last Session Summary
-[What was accomplished]
+{What was accomplished this session}
 
 ## In-Progress Work
-[Any uncommitted changes or partial work]
+{Any uncommitted changes or partial work}
+- Files modified: {list}
+- Tests status: {passing/failing/not run}
 
 ## Blockers
-[What was preventing progress, if anything]
+{What was preventing progress, if anything}
 
 ## Context Dump
-[Important context that would be lost]:
-- Key decisions made
-- Approaches tried
-- Hypotheses about issues
-- Files that were being modified
+{Critical context that would be lost}:
+
+### Decisions Made
+- {Decision 1}: {rationale}
+- {Decision 2}: {rationale}
+
+### Approaches Tried
+- {Approach 1}: {outcome}
+- {Approach 2}: {outcome}
+
+### Current Hypothesis
+{Best guess at solution/issue}
+
+### Files of Interest
+- `{file1}`: {what's relevant}
+- `{file2}`: {what's relevant}
 
 ## Next Steps
-1. [Specific first action for next session]
-2. [Second priority]
-3. [Third priority]
+1. {Specific first action for next session}
+2. {Second priority}
+3. {Third priority}
 ```
 
-### 2. Add Journal Entry
+---
+
+## 2. Add Journal Entry
+
 Create entry in `.gsd/JOURNAL.md`:
 
 ```markdown
-## Session: [date/time]
+## Session: {YYYY-MM-DD HH:MM}
 
 ### Objective
-[What this session was trying to accomplish]
+{What this session was trying to accomplish}
 
 ### Accomplished
-- [List of completed items]
+- {Item 1}
+- {Item 2}
+
+### Verification
+- [x] {What was verified}
+- [ ] {What still needs verification}
 
 ### Paused Because
-[Reason for pausing]
+{Reason for pausing}
 
 ### Handoff Notes
-[Critical info for resuming]
+{Critical info for resuming}
 ```
 
-### 3. Confirm Handoff
-Display:
-```
-✅ STATE SAVED
+---
 
-Session paused. To resume:
-  /resume
+## 3. Commit State
 
-Context has been preserved in:
-  → .gsd/STATE.md
-  → .gsd/JOURNAL.md
+```powershell
+git add .gsd/STATE.md .gsd/JOURNAL.md
+git commit -m "docs: pause session - {brief reason}"
 ```
+
+---
+
+## 4. Display Handoff
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GSD ► SESSION PAUSED ⏸
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+State saved to:
+• .gsd/STATE.md
+• .gsd/JOURNAL.md
+
+───────────────────────────────────────────────────────
+
+To resume later:
+
+/resume
+
+───────────────────────────────────────────────────────
+
+💡 Fresh context = fresh perspective
+   The struggles end here. Next session starts clean.
+
+───────────────────────────────────────────────────────
+```
+
+</process>
+
+<context_hygiene>
+If pausing due to debugging failures:
+
+1. Be explicit about what failed
+2. Document exact error messages
+3. List files that were touched
+4. State your hypothesis clearly
+5. Suggest what to try next (different approach)
+
+A fresh context often immediately sees solutions that a polluted context missed.
+</context_hygiene>
