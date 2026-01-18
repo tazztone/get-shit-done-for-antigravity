@@ -169,7 +169,7 @@ No "trust me, it works." Every verification produces evidence:
 
 ---
 
-## 🎮 Commands (21 Total)
+## 🎮 Commands (25 Total)
 
 ### Core Workflow
 | Command | Purpose |
@@ -207,6 +207,29 @@ No "trust me, it works." Every verification produces evidence:
 | `/resume` | Restore from last session |
 | `/add-todo` | Quick capture idea |
 | `/check-todos` | List pending items |
+
+---
+
+## 💡 Daily Workflow
+
+**Without GSD:** "Add a feature" → Inconsistent code → Bugs → Debug loop → Frustration
+
+**With GSD:** "Add a feature" → SPEC → Plan → Atomic execution → Verification → ✅ Done
+
+### Typical Session
+
+```
+/resume              ← Load context from last session
+/progress            ← See where you left off
+/plan 2              ← Plan next phase
+/execute 2           ← Implement with atomic commits
+/verify 2            ← Prove it works (screenshots, tests)
+/pause               ← Save state for later
+```
+
+### Key Principle
+
+GSD forces **planning before coding**. Claude can't write code until `SPEC.md` says `FINALIZED`. This prevents building the wrong thing.
 
 ---
 
