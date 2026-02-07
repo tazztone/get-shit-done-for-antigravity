@@ -30,23 +30,6 @@ People who want to describe what they want and have it built correctly — witho
 
 ## 🚀 Getting Started
 
-**PowerShell (Windows):**
-```powershell
-# Open your project
-cd your-project
-
-# Clone the GSD template
-git clone https://github.com/toonight/get-shit-done-for-antigravity.git gsd-template
-
-# Copy to your project
-Copy-Item -Recurse gsd-template\.agent .\
-Copy-Item -Recurse gsd-template\.gemini .\
-Copy-Item -Recurse gsd-template\.gsd .\
-
-# Clean up
-Remove-Item -Recurse -Force gsd-template
-```
-
 **Bash (Linux/Mac):**
 ```bash
 # open your project
@@ -254,14 +237,13 @@ GSD forces **planning before coding**. Claude can't write code until `SPEC.md` s
 
 ---
 
-## 🌍 Cross-Platform Support
+## 🌍 Linux-First Focus
 
-All workflow files include **dual syntax** — both PowerShell and Bash commands:
+Everything in GSD for Antigravity is optimized for **Linux and Bash**. 
 
-- **Windows users:** Use the PowerShell blocks
-- **Linux/Mac users:** Use the Bash blocks (some may require `jq` for JSON parsing)
-
-**Note:** Git commands (`git add`, `git commit`, `git tag`) are cross-platform and work identically on all systems.
+- **Optimized for Bash:** All workflows and skills use standard Bash commands.
+- **Tooling:** Some commands may require `jq` for JSON parsing.
+- **Cross-Platform Note:** While optimized for Linux, the system maintains a `cross-platform.md` example for reference, but the primary workflows are Linux-only.
 
 ---
 
@@ -297,13 +279,6 @@ GSD-STYLE.md          # Complete style guide
 ## 🧪 Testing
 
 Run validation scripts to verify GSD structure:
-
-**PowerShell:**
-```powershell
-.\scripts\validate-all.ps1      # Run all validators
-.\scripts\validate-workflows.ps1  # Workflows only
-.\scripts\validate-skills.ps1     # Skills only
-```
 
 **Bash:**
 ```bash
