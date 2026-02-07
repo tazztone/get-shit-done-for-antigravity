@@ -2,6 +2,20 @@
 
 All notable changes to GSD for Antigravity.
 
+## [1.5.0] - 2026-02-07
+
+### Added
+- **`/refine` Workflow** — Strategic Course Correction and Roadmap Reconciliation
+- **Linux-First Optimization** — Complete removal of PowerShell dependencies
+
+### Changed
+- **Workflows:** All 26 workflows converted to pure Bash
+- **Skills:** All 8 skills updated with Linux-specific examples
+- **Repo Structure:** Removed `scripts/*.ps1` files
+- **Documentation:** Updated README.md and quick-reference.md for Linux users
+
+---
+
 ## [1.4.0] - 2026-01-17
 
 ### Added
