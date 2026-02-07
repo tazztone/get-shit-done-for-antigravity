@@ -19,6 +19,7 @@
 | Command | Args | Purpose |
 |---------|------|---------|
 | `/map` | - | Analyze codebase → ARCHITECTURE.md |
+| `/refine` | - | Update SPEC.md & reconcile roadmap |
 | `/plan` | `[phase]` | Create PLAN.md files for phase |
 | `/execute` | `phase [--gaps-only]` | Run plans with wave execution |
 | `/verify` | `phase` | Validate with empirical proof |

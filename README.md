@@ -176,6 +176,7 @@ No "trust me, it works." Every verification produces evidence:
 | Command | Purpose |
 |---------|---------|
 | `/new-project` | Deep questioning → SPEC.md |
+| `/refine` | Refine Spec & Reconcile Roadmap (Strategic Course Correction) |
 | `/new-milestone` | Create milestone with phases |
 | `/complete-milestone` | Archive completed milestone |
 | `/audit-milestone` | Review milestone quality |
