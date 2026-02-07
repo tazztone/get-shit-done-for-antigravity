@@ -161,7 +161,7 @@ No "trust me, it works." Every verification produces evidence:
 
 ---
 
-## 🎮 Commands (25 Total)
+## 🎮 Commands (26 Total)
 
 ### Core Workflow
 | Command | Purpose |
