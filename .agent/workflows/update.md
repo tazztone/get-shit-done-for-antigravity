@@ -26,7 +26,7 @@ fi
 
 ```bash
 # Clone latest to temp directory
-git clone --depth 1 https://github.com/toonight/get-shit-done-for-antigravity.git .gsd-update-temp
+git clone --depth 1 https://github.com/tazztone/get-shit-done-for-antigravity.git .gsd-update-temp
 ```
 
 ---

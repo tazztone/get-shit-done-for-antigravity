@@ -35,8 +35,7 @@ People who want to describe what they want and have it built correctly — witho
 # open your project
 cd your-project
 
-# Clone the GSD template
-git clone https://github.com/toonight/get-shit-done-for-antigravity.git gsd-template
+git clone https://github.com/tazztone/get-shit-done-for-antigravity.git gsd-template
 
 # Copy to your project
 cp -r gsd-template/.agent ./
